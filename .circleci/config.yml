@@ -19,7 +19,8 @@ jobs: # a collection of steps
             npm --version
       - run:
           name: install-npm
-          command: npm install
+          command: npm update 
+   
       - save_cache: # special step to save the dependency cache
           key: dependency-cache-{{ checksum "package-lock.json" }}
           paths:
@@ -29,10 +30,32 @@ jobs: # a collection of steps
           command: npm test
       - run: 
           name: audit
-          command: npm audit
+          command: npm audit fix --force
       
     
       - setup_remote_docker:
+          version: 19.03.13
+
+      - run:
+          name: Build test container
+          command: |
+            docker build -t "ucp:${CIRCLE_BUILD_NUM}" .
+workflows:
+  version: 2
+  commit:
+    jobs:
+      - build
+  nightly:
+    triggers:
+      - schedule:
+          cron: "21 22 * * * "
+          filters:
+            branches:
+              only:
+                - master
+                
+    jobs:
+      - build
           version: 19.03.13
 
       - run:
