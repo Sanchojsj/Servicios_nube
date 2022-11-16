@@ -39,7 +39,6 @@ jobs: # a collection of steps
           name: Build test container
           command: |
             docker build -t "ucp:${CIRCLE_BUILD_NUM}" .
-
 workflows:
   version: 2
   commit:
